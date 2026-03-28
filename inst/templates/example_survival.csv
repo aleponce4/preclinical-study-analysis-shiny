@@ -3,15 +3,23 @@ example_mouse_01,201,Control,,alive,alive,alive,alive,removed_study_end
 example_mouse_01,202,Control,,alive,alive,alive,alive,removed_study_end
 example_mouse_01,203,Control,,alive,alive,alive,alive,removed_study_end
 example_mouse_01,204,Control,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,205,Control,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,206,Control,,alive,alive,alive,alive,removed_study_end
 example_mouse_01,211,Challenge,,alive,found_dead,,,
-example_mouse_01,212,Challenge,,alive,found_dead,,,
+example_mouse_01,212,Challenge,,alive,alive,found_dead,,
 example_mouse_01,213,Challenge,,alive,alive,found_dead,,
-example_mouse_01,214,Challenge,,alive,alive,found_dead,,
+example_mouse_01,214,Challenge,,alive,alive,alive,found_dead,
+example_mouse_01,215,Challenge,,alive,alive,found_dead,,
+example_mouse_01,216,Challenge,,alive,alive,alive,found_dead,
 example_mouse_01,221,Treatment A High,,alive,alive,alive,alive,removed_study_end
-example_mouse_01,222,Treatment A High,,alive,alive,alive,found_dead,
+example_mouse_01,222,Treatment A High,,alive,alive,alive,alive,removed_study_end
 example_mouse_01,223,Treatment A High,,alive,alive,alive,alive,removed_study_end
-example_mouse_01,224,Treatment A High,,alive,alive,alive,alive,removed_study_end
-example_mouse_01,231,Treatment A Low,,alive,alive,found_dead,,
+example_mouse_01,224,Treatment A High,,alive,alive,alive,alive,found_dead
+example_mouse_01,225,Treatment A High,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,226,Treatment A High,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,231,Treatment A Low,,alive,alive,alive,found_dead,
 example_mouse_01,232,Treatment A Low,,alive,alive,alive,found_dead,
-example_mouse_01,233,Treatment A Low,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,233,Treatment A Low,,alive,alive,alive,alive,found_dead
 example_mouse_01,234,Treatment A Low,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,235,Treatment A Low,,alive,alive,alive,alive,removed_study_end
+example_mouse_01,236,Treatment A Low,,alive,alive,alive,alive,found_dead
