@@ -1,0 +1,194 @@
+prepare_score_plot_settings <- function(settings = list()) {
+  settings <- normalize_score_plot_settings(settings)
+  warnings <- character()
+
+  if (identical(settings$individual_layer, "none") && !settings$show_mean) {
+    warnings <- c(warnings, "At least one clinical score layer must remain visible. Falling back to show the trendline.")
+    settings$show_mean <- TRUE
+  }
+
+  if (identical(settings$y_axis_mode, "fixed")) {
+    if (is.na(settings$y_min) || is.na(settings$y_max) || settings$y_min >= settings$y_max) {
+      warnings <- c(warnings, "Fixed y-axis limits require both min and max, with min smaller than max. Falling back to auto scale.")
+      settings$y_axis_mode <- "auto"
+      settings$y_min <- NA_real_
+      settings$y_max <- NA_real_
+    }
+  }
+
+  list(settings = settings, warnings = unique(warnings))
+}
+
+score_y_expand <- function() {
+  ggplot2::expansion(mult = c(0.06, 0.10))
+}
+
+plot_scores <- function(scores_long,
+                        group_meta,
+                        metadata = list(),
+                        settings = default_score_plot_settings()) {
+  prepared <- prepare_score_plot_settings(settings)
+  settings <- prepared$settings
+
+  ordered_meta <- group_meta |>
+    dplyr::arrange(.data$plot_order, .data$display_name)
+  day_min <- floor(min(scores_long$day, na.rm = TRUE))
+  day_max <- ceiling(max(scores_long$day, na.rm = TRUE))
+  day_breaks <- seq(day_min, day_max, by = 1)
+
+  legend_labels <- weight_legend_labels(scores_long, ordered_meta, settings$show_legend_n)
+  levels <- ordered_meta$display_name
+  colors <- ordered_meta$color
+  names(colors) <- ordered_meta$display_name
+  offset_map <- weight_group_offsets(levels, width = settings$point_spread %||% 0.10)
+  stagger_points <- identical(settings$individual_layer, "points") && !isTRUE(settings$show_mean)
+  show_point_summary <- identical(settings$individual_layer, "points") && !isTRUE(settings$show_mean)
+  summary_error_style <- if (show_point_summary && identical(settings$error_style, "none")) "sem" else settings$error_style
+
+  plot_data <- scores_long |>
+    dplyr::mutate(
+      group_display = factor(.data$display_name, levels = levels),
+      x_stagger = .data$day + unname(offset_map[as.character(.data$display_name)]),
+      x_point = if (stagger_points) .data$x_stagger else .data$day
+    )
+  uses_fill_scale <- isTRUE(settings$show_mean) &&
+    !identical(summary_error_style, "none") &&
+    !identical(settings$error_display, "bar")
+
+  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$day, y = .data$score, color = .data$group_display))
+
+  if (identical(settings$individual_layer, "lines")) {
+    plot <- plot +
+      ggplot2::geom_line(ggplot2::aes(group = .data$animal_id), alpha = 0.35, linewidth = 0.5, na.rm = TRUE)
+  } else if (identical(settings$individual_layer, "points")) {
+    plot <- plot +
+      ggplot2::geom_point(
+        data = plot_data,
+        ggplot2::aes(x = .data$x_point, y = .data$score, color = .data$group_display),
+        inherit.aes = FALSE,
+        alpha = 0.55, size = 1.8, na.rm = TRUE
+      )
+  }
+
+  if (isTRUE(settings$show_mean) || show_point_summary) {
+    summary_data <- summarise_scores_data(
+      plot_data,
+      error_style = summary_error_style
+    ) |>
+      dplyr::mutate(
+        group_display = factor(.data$group, levels = levels),
+        x_stagger = .data$day + unname(offset_map[as.character(.data$group)]),
+        x_mean = if (show_point_summary) .data$x_stagger else .data$day
+      )
+
+    if (!identical(summary_error_style, "none")) {
+      if (show_point_summary || identical(settings$error_display, "bar")) {
+        plot <- plot +
+          ggplot2::geom_errorbar(
+            data = summary_data,
+            ggplot2::aes(
+              x = .data$x_mean,
+              y = .data$mean,
+              ymin = .data$error_low,
+              ymax = .data$error_high,
+              color = .data$group_display
+            ),
+            inherit.aes = FALSE,
+            width = if (show_point_summary) 0.10 else 0.16,
+            linewidth = if (show_point_summary) 0.42 else 0.5,
+            alpha = if (show_point_summary) 0.72 else 1,
+            na.rm = TRUE,
+            show.legend = FALSE
+          )
+      } else {
+        plot <- plot +
+          ggplot2::geom_ribbon(
+            data = summary_data,
+            ggplot2::aes(
+              x = .data$x_mean,
+              ymin = .data$error_low,
+              ymax = .data$error_high,
+              fill = .data$group_display,
+              group = .data$group_display
+            ),
+            inherit.aes = FALSE,
+            alpha = 0.16,
+            color = NA,
+            na.rm = TRUE
+          )
+      }
+    }
+
+    if (show_point_summary) {
+      plot <- plot +
+        ggplot2::geom_point(
+          data = summary_data,
+          ggplot2::aes(x = .data$x_mean, y = .data$mean, color = .data$group_display),
+          inherit.aes = FALSE,
+          size = 1.5,
+          alpha = 0.9,
+          na.rm = TRUE,
+          show.legend = FALSE
+        )
+    } else {
+      plot <- plot +
+        ggplot2::geom_line(
+          data = summary_data,
+          ggplot2::aes(x = .data$x_mean, y = .data$mean, color = .data$group_display, group = .data$group_display),
+          inherit.aes = FALSE,
+          linewidth = 1.1,
+          na.rm = TRUE
+        )
+    }
+  }
+
+  plot <- plot +
+    ggplot2::scale_color_manual(values = colors, breaks = levels, labels = legend_labels, drop = FALSE) +
+    ggplot2::scale_x_continuous(
+      breaks = day_breaks
+    ) +
+    ggplot2::labs(
+      title = metadata$study_title %||% "Clinical Scores",
+      subtitle = metadata$subtitle %||% NULL,
+      x = "DPI",
+      y = "Clinical Scores",
+      color = "Group"
+    ) +
+    ggplot2::theme_bw(base_size = 13, base_family = "sans") +
+    ggplot2::theme(
+      text = ggplot2::element_text(colour = "black", family = "sans", face = "bold"),
+      axis.text = ggplot2::element_text(colour = "black", face = "bold"),
+      axis.title = ggplot2::element_text(colour = "black", face = "bold"),
+      legend.text = ggplot2::element_text(colour = "black", face = "bold"),
+      legend.title = ggplot2::element_text(colour = "black", face = "bold"),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      axis.line = ggplot2::element_line(colour = "black", linewidth = 0.8),
+      axis.ticks = ggplot2::element_line(colour = "black", linewidth = 0.5),
+      axis.ticks.length = grid::unit(0.18, "cm"),
+      plot.title = ggplot2::element_text(face = "bold", colour = "black"),
+      plot.subtitle = ggplot2::element_text(colour = "black", face = "bold"),
+      plot.title.position = "plot"
+    ) +
+    legend_theme_for_position(
+      settings$legend_position %||% "inset",
+      inset_x = 0.02, inset_y = 0.02, inset_just = c(0, 0)
+    )
+
+  if (uses_fill_scale) {
+    plot <- plot +
+      ggplot2::scale_fill_manual(values = colors, breaks = levels, labels = legend_labels, drop = FALSE) +
+      ggplot2::labs(fill = "Group")
+  }
+
+  if (!identical(settings$y_axis_mode, "fixed")) {
+    plot <- plot + ggplot2::scale_y_continuous(expand = score_y_expand())
+  }
+
+  if (identical(settings$y_axis_mode, "fixed")) {
+    plot <- plot + ggplot2::coord_cartesian(ylim = c(settings$y_min, settings$y_max))
+  }
+
+  plot
+}

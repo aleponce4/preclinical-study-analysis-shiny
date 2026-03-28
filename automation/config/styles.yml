@@ -1,0 +1,45 @@
+styles:
+  default:
+    shared_style:
+      color_mode: preset
+      palette_name: okabe_ito
+
+    stats:
+      p_adjust_method: bh
+
+    weight_plot:
+      mode: pct_baseline
+      baseline_rule: d0_only
+      individual_layer: points
+      show_mean: true
+      error_style: sem
+      error_display: band
+      y_axis_mode: auto
+      start_at_zero: false
+      legend_position: inset_bottom_left
+      show_legend_n: false
+      point_spread: 0.10
+
+    score_plot:
+      individual_layer: points
+      show_mean: true
+      error_style: sem
+      error_display: band
+      y_axis_mode: fixed
+      y_min: 0
+      y_max: 10
+      legend_position: inset_bottom_left
+      show_legend_n: false
+      point_spread: 0.10
+
+    survival_plot:
+      show_ci: false
+      show_death_marks: true
+      show_p_value: true
+      vary_linetypes: false
+      nudge_lines: true
+      nudge_amount: 0.012
+      y_axis_mode: fixed
+      y_min: 0
+      y_max: 100
+      legend_position: inset_bottom_left

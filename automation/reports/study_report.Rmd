@@ -1,0 +1,284 @@
+---
+title: ""
+output:
+  pdf_document:
+    toc: false
+    number_sections: false
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{array}
+  - \usepackage{tabularx}
+  - \usepackage{framed}
+  - \usepackage{float}
+  - \setlength{\parindent}{0pt}
+  - \setlength{\parskip}{0.35em}
+params:
+  report: !r list()
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 11,
+  fig.height = 5.9,
+  fig.align = "center",
+  fig.pos = "H"
+)
+report <- params$report
+
+fmt_p <- function(p) {
+  if (is.null(p) || length(p) == 0 || is.na(p)) return("NA")
+  if (p < 0.001) return("< 0.001")
+  sprintf("%.3f", p)
+}
+
+latex_escape <- function(x) {
+  x <- as.character(x %||% "")
+  x <- gsub("\\\\", "\\\\textbackslash{}", x)
+  x <- gsub("([#$%&_{}])", "\\\\\\1", x, perl = TRUE)
+  x <- gsub("~", "\\\\textasciitilde{}", x, fixed = TRUE)
+  x <- gsub("\\^", "\\\\textasciicircum{}", x, perl = TRUE)
+  gsub("\n", " ", x, fixed = TRUE)
+}
+
+fmt_time <- function(x) {
+  format(x, "%Y-%m-%d %H:%M %Z")
+}
+
+render_outline_block <- function() {
+  cat(
+    paste(
+      "\\noindent",
+      "\\fcolorbox{black}{white}{",
+      "\\parbox{0.97\\textwidth}{",
+      "{\\small\\bfseries REPORT OUTLINE}\\\\[0.35em]",
+      "{\\normalsize 1. Summary \\textbar{} 2. Weights \\textbar{} 3. Survival \\textbar{} 4. Clinical Scores}",
+      "}",
+      "}",
+      "\\par\\vspace{1.1em}",
+      sep = "\n"
+    )
+  )
+}
+
+render_section_rule <- function() {
+  cat("\\vspace{0.9em}\n")
+  cat("\\noindent\\rule{\\textwidth}{0.8pt}\n")
+  cat("\\vspace{0.35em}\n")
+}
+
+render_page_break <- function() {
+  cat("\\newpage\n")
+}
+
+render_table <- function(tbl, digits = NULL, align = NULL) {
+  if (is.null(tbl) || !nrow(tbl)) {
+    cat("No data available.\n")
+    return(invisible(NULL))
+  }
+
+  if (is.null(align)) {
+    align <- "l"
+  }
+
+  kable_args <- list(tbl, align = align)
+  if (!is.null(digits)) {
+    kable_args$digits <- digits
+  }
+
+  cat(do.call(knitr::kable, kable_args), sep = "\n")
+}
+```
+
+```{r report-header, results='asis'}
+cat(
+  sprintf(
+    paste(
+      "\\noindent",
+      "\\begin{minipage}[t]{0.69\\textwidth}",
+      "{\\normalsize\\bfseries %s}\\\\[0.2em]",
+      "{\\LARGE\\bfseries %s}\\\\[0.35em]",
+      "{\\normalsize\\bfseries Weights, survival, and clinical score overview}\\\\[0.55em]",
+      "{\\small Study ID}\\\\",
+      "{\\normalsize %s}\\\\[0.3em]",
+      "{\\small Source file}\\\\",
+      "{\\normalsize %s}",
+      "\\end{minipage}",
+      "\\hfill",
+      "\\begin{minipage}[t]{0.27\\textwidth}",
+      "\\raggedleft",
+      "{\\small\\bfseries Generated}\\\\",
+      "{\\normalsize\\bfseries %s}\\\\[0.55em]",
+      "{\\small\\bfseries Survival source}\\\\",
+      "{\\normalsize inferred from weights}\\\\[0.55em]",
+      "{\\small\\bfseries P-adjust method}\\\\",
+      "{\\normalsize %s}",
+      "\\end{minipage}",
+      "\\par\\vspace{0.75em}\\noindent\\rule{\\textwidth}{1pt}\\vspace{0.75em}",
+      sep = "\n"
+    ),
+    latex_escape(report$report_name %||% "Study Monitoring Report"),
+    latex_escape(report$study$report_title %||% report$study$study_id),
+    latex_escape(report$study$study_id),
+    latex_escape(report$source_file %||% basename(report$source_path %||% "")),
+    latex_escape(fmt_time(report$generated_at)),
+    latex_escape(toupper(report$p_adjust_method))
+  )
+)
+```
+
+```{r report-outline, results='asis'}
+render_outline_block()
+```
+
+```{r summary-rule, results='asis'}
+render_section_rule()
+```
+
+## 1. Summary
+
+Key events and notable warnings from this report run.
+
+```{r study-summary-items, results='asis'}
+summary_items <- report$summary$items %||% character()
+if (!length(summary_items)) {
+  cat("- No study summary items available.\n")
+} else {
+  cat(paste(sprintf("- %s", summary_items), collapse = "\n"))
+}
+```
+
+### Overnight Alerts
+
+```{r summary-alerts, results='asis'}
+if (!length(report$summary$alerts %||% character())) {
+  cat("No overnight alerts.\n")
+} else {
+  cat(paste(sprintf("- %s", report$summary$alerts), collapse = "\n"))
+}
+```
+
+### Other Warnings
+
+```{r summary-warnings, results='asis'}
+if (!length(report$summary$warnings %||% character())) {
+  cat("No other warnings.\n")
+} else {
+  cat(paste(sprintf("- %s", report$summary$warnings), collapse = "\n"))
+}
+```
+
+```{r weights-rule, results='asis'}
+render_page_break()
+render_section_rule()
+```
+
+## 2. Weights
+
+Trajectory plot, snapshot table, and final-day statistical tests.
+
+```{r weights-plot, fig.cap="Weight trajectories", fig.pos='H'}
+print(report$plots$weights)
+```
+
+### Key Summary
+
+```{r weights-key-stats, results='asis'}
+if (is.null(report$tables$weight_key_stats) || !nrow(report$tables$weight_key_stats)) {
+  cat("No weight key stats available.\n")
+} else {
+  render_table(report$tables$weight_key_stats, align = "lllll")
+}
+```
+
+### Statistical Tests
+
+- Kruskal-Wallis p-value at final DPI: **`r fmt_p(report$metrics$weight_kw_p)`**
+
+```{r weights-pairwise, results='asis'}
+if (is.null(report$tables$weight_pairwise) || !nrow(report$tables$weight_pairwise)) {
+  cat("Pairwise weight comparison not available (requires >= 3 groups with data).\n")
+} else {
+  render_table(report$tables$weight_pairwise, digits = 3, align = "lll")
+}
+```
+
+```{r survival-rule, results='asis'}
+render_page_break()
+render_section_rule()
+```
+
+## 3. Survival
+
+Kaplan-Meier plot, survival overview, and pairwise comparisons.
+
+```{r survival-plot, fig.cap="Kaplan-Meier survival plot", fig.pos='H', fig.height=5.2}
+print(report$plots$survival)
+```
+
+### Key Summary
+
+```{r survival-summary, results='asis'}
+if (is.null(report$tables$survival_summary) || !nrow(report$tables$survival_summary)) {
+  cat("No survival summary available.\n")
+} else {
+  render_table(report$tables$survival_summary, digits = 1, align = "lllllll")
+}
+```
+
+### Statistical Tests
+
+- Log-rank p-value: **`r fmt_p(report$metrics$survival_logrank_p)`**
+
+```{r survival-pairwise, results='asis'}
+if (is.null(report$tables$survival_pairwise) || !nrow(report$tables$survival_pairwise)) {
+  cat("Pairwise survival comparison not available (requires >= 3 groups with events).\n")
+} else {
+  render_table(report$tables$survival_pairwise, digits = 3, align = "llll")
+}
+```
+
+```{r scores-rule, results='asis'}
+render_page_break()
+render_section_rule()
+```
+
+## 4. Clinical Scores
+
+Clinical score plot and key summary statistics when available.
+
+```{r scores-presence-text, results='asis'}
+if (!isTRUE(report$flags$has_scores)) {
+  cat("No clinical score columns were detected in the input workbook.\n")
+}
+```
+
+```{r scores-plot, fig.cap="Clinical score trajectories", fig.pos='H'}
+if (isTRUE(report$flags$has_scores)) {
+  print(report$plots$scores)
+}
+```
+
+### Key Summary
+
+```{r scores-key-stats, results='asis'}
+if (!isTRUE(report$flags$has_scores) || is.null(report$tables$score_key_stats) || !nrow(report$tables$score_key_stats)) {
+  cat("No clinical score key stats available.\n")
+} else {
+  render_table(report$tables$score_key_stats, align = "lllll")
+}
+```
+
+### Statistical Tests
+
+- Kruskal-Wallis p-value at final DPI: **`r fmt_p(report$metrics$score_kw_p)`**
+
+```{r scores-pairwise, results='asis'}
+if (!isTRUE(report$flags$has_scores) || is.null(report$tables$score_pairwise) || !nrow(report$tables$score_pairwise)) {
+  cat("Pairwise clinical score comparison was not available for this study.\n")
+} else {
+  render_table(report$tables$score_pairwise, digits = 3, align = "lll")
+}
+```

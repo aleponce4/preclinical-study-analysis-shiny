@@ -1,0 +1,35 @@
+name: R checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  check:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.4.2"
+
+      - name: Install renv
+        shell: pwsh
+        run: Rscript -e "install.packages('renv', repos='https://cloud.r-project.org')"
+
+      - name: Restore dependencies
+        shell: pwsh
+        run: Rscript -e "renv::restore(prompt = FALSE)"
+
+      - name: Run unit tests
+        shell: pwsh
+        run: Rscript tests/testthat.R
+
+      - name: Run smoke test
+        shell: pwsh
+        run: Rscript scripts/dev_smoke.R
+
