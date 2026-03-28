@@ -48,7 +48,7 @@ function Invoke-RScriptFile {
   )
 
   Write-Host "Running $ScriptPath" -ForegroundColor Cyan
-  & $RscriptPath $ScriptPath
+  & $RscriptPath --vanilla $ScriptPath
 
   if ($LASTEXITCODE -ne 0) {
     throw "Failed while running $ScriptPath"
