@@ -13,88 +13,101 @@ d0_date   <- as.Date("2026-02-01")
 days      <- 0:15  # D0–D15
 
 groups <- list(
-  list(name = "Control",          cage = "100001", mice = 201:204,
-       time = "8:00",
-       # D0 weights, slow gain ~0.15/day, score always 0, temp stable ~38.0
-       w0 = c(22.5, 21.8, 23.2, 22.1),
-       gain = c(0.15, 0.13, 0.18, 0.14),
-       die_after = c(15, 15, 15, 15)),   # all survive
-
-  list(name = "Challenge",        cage = "100002", mice = 211:214,
-       time = "8:05",
-       w0 = c(22.3, 21.9, 23.0, 22.7),
-       die_after = c(4, 4, 6, 6)),       # dead D5 or D7 (last weight D4 or D6)
-
-  list(name = "Treatment A High", cage = "100003", mice = 221:224,
-       time = "8:10",
-       w0 = c(22.8, 21.5, 23.5, 22.2),
-       die_after = c(15, 9, 15, 15)),    # 222 dead D10 (last weight D9)
-
-  list(name = "Treatment A Low",  cage = "100004", mice = 231:234,
-       time = "8:15",
-       w0 = c(22.0, 21.7, 23.3, 22.4),
-       die_after = c(6, 9, 15, 15))      # 231 dead D7, 232 dead D10
+  list(
+    name = "Control",
+    cage = "100001",
+    mice = 201:206,
+    time = "8:00",
+    w0 = c(22.5, 21.8, 23.2, 22.1, 22.9, 21.6),
+    severity = c(-0.05, -0.02, 0.00, 0.03, 0.06, -0.04),
+    die_after = rep(15, 6)
+  ),
+  list(
+    name = "Challenge",
+    cage = "100002",
+    mice = 211:216,
+    time = "8:05",
+    w0 = c(22.3, 21.9, 23.0, 22.7, 22.5, 21.7),
+    severity = c(-0.08, 0.04, 0.10, 0.00, 0.15, 0.06),
+    die_after = c(4, 5, 6, 7, 6, 8)
+  ),
+  list(
+    name = "Treatment A High",
+    cage = "100003",
+    mice = 221:226,
+    time = "8:10",
+    w0 = c(22.8, 21.5, 23.5, 22.2, 22.9, 21.8),
+    severity = c(-0.06, 0.03, -0.02, 0.12, -0.04, 0.01),
+    die_after = c(15, 15, 15, 12, 15, 15)
+  ),
+  list(
+    name = "Treatment A Low",
+    cage = "100004",
+    mice = 231:236,
+    time = "8:15",
+    w0 = c(22.0, 21.7, 23.3, 22.4, 22.8, 21.9),
+    severity = c(0.08, 0.12, 0.00, -0.03, 0.05, 0.10),
+    die_after = c(7, 9, 12, 15, 15, 13)
+  )
 )
 
-# Weight / score / temp trajectory by group type
-weight_traj <- function(group_name, w0, day, alive) {
-  if (!alive) return(NA_real_)
-  if (group_name == "Control") {
-    return(round(w0 + day * 0.15 + (day %% 2) * 0.1, 1))
-  }
-  # Non-control groups: lose weight until nadir, then recover or reach an endpoint
-  if (group_name == "Challenge") {
-    # ~1.2-1.5 g/day loss, steepening
-    return(round(w0 - day * 1.4 - (day > 2) * 0.4, 1))
-  }
-  if (group_name == "Treatment A High") {
-    if (day <= 4) return(round(w0 - day * 1.05, 1))
-    if (day <= 6) return(round(w0 - 4 * 1.05 - (day - 4) * 0.1, 1))  # plateau
-    return(round(w0 - 4 * 1.05 - 2 * 0.1 + (day - 6) * 0.57, 1))   # recovery
-  }
-  if (group_name == "Treatment A Low") {
-    if (day <= 6) return(round(w0 - day * 1.25, 1))
-    return(round(w0 - 6 * 1.25 + (day - 6) * 0.45, 1))              # partial recovery
-  }
-  w0
+weight_profiles <- list(
+  "Control" = c(0.0, 0.2, 0.3, 0.5, 0.6, 0.8, 0.9, 1.0, 1.2, 1.3, 1.5, 1.6, 1.7, 1.9, 2.0, 2.1),
+  "Challenge" = c(0.0, -0.8, -1.7, -2.8, -4.0, -5.1, -6.0, -6.7, -7.2, -7.6, -7.9, -8.1, -8.3, -8.4, -8.5, -8.6),
+  "Treatment A High" = c(0.0, -0.5, -1.2, -1.9, -2.6, -3.0, -3.1, -2.7, -2.2, -1.7, -1.2, -0.8, -0.3, 0.1, 0.4, 0.7),
+  "Treatment A Low" = c(0.0, -0.7, -1.5, -2.4, -3.2, -3.8, -4.1, -4.0, -3.6, -3.1, -2.7, -2.2, -1.7, -1.2, -0.8, -0.4)
+)
+
+score_profiles <- list(
+  "Control" = rep(0, length(days)),
+  "Challenge" = c(0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4),
+  "Treatment A High" = c(0, 1, 1, 2, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0, 0, 0),
+  "Treatment A Low" = c(0, 1, 2, 2, 3, 3, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0)
+)
+
+temp_profiles <- list(
+  "Control" = c(38.0, 38.1, 38.0, 38.1, 38.0, 38.1, 38.0, 38.1, 38.0, 38.1, 38.0, 38.1, 38.0, 38.1, 38.0, 38.1),
+  "Challenge" = c(38.0, 38.5, 39.0, 39.5, 39.9, 40.2, 40.4, 40.5, 40.6, 40.6, 40.7, 40.7, 40.7, 40.7, 40.7, 40.7),
+  "Treatment A High" = c(38.0, 38.4, 38.9, 39.2, 39.4, 39.2, 38.9, 38.6, 38.4, 38.2, 38.0, 37.9, 37.9, 38.0, 38.0, 38.1),
+  "Treatment A Low" = c(38.0, 38.5, 39.0, 39.4, 39.8, 40.0, 40.1, 39.8, 39.5, 39.2, 38.9, 38.6, 38.3, 38.1, 38.0, 38.0)
+)
+
+weight_wobble <- function(mouse, day) {
+  c(-0.1, 0.0, 0.1, 0.2, -0.2, 0.1)[((mouse + day) %% 6) + 1]
 }
 
-score_traj <- function(group_name, day, alive) {
-  if (!alive || group_name == "Control") return(0)
-  if (group_name == "Challenge") {
-    return(min(4, c(0,1,2,2,3,3,4)[day + 1]))
-  }
-  if (group_name == "Treatment A High") {
-    profile <- c(0,1,2,3,3,2,2,1,1,0,0,0,0,0,0,0)
-    return(profile[min(day + 1, length(profile))])
-  }
-  if (group_name == "Treatment A Low") {
-    profile <- c(0,1,2,3,3,3,3,2,2,1,1,1,0,0,0,0)
-    return(profile[min(day + 1, length(profile))])
-  }
-  0
+score_wobble <- function(mouse, day) {
+  c(0.0, 0.2, -0.1, 0.1)[((mouse + day) %% 4) + 1]
 }
 
-temp_traj <- function(group_name, day, alive) {
+temp_wobble <- function(mouse, day) {
+  c(-0.1, 0.0, 0.1, 0.0)[((mouse + day) %% 4) + 1]
+}
+
+clamp <- function(x, lower, upper) max(lower, min(upper, x))
+
+weight_traj <- function(group_name, w0, day, alive, severity, mouse) {
   if (!alive) return(NA_real_)
-  if (group_name == "Control") {
-    return(round(38.0 + (day %% 2) * 0.1, 1))
-  }
-  if (group_name == "Challenge") {
-    temps <- c(38.0, 38.7, 39.4, 39.9, 40.2, 40.4, 40.5, 40.6)
-    return(temps[min(day + 1, length(temps))])
-  }
-  if (group_name == "Treatment A High") {
-    profile <- c(38.0, 38.6, 39.2, 39.5, 39.2, 38.8, 38.5, 38.3, 38.1, 38.0,
-                 37.9, 37.8, 37.9, 38.0, 38.0, 38.1)
-    return(profile[min(day + 1, length(profile))])
-  }
-  if (group_name == "Treatment A Low") {
-    profile <- c(37.8, 38.5, 39.2, 39.7, 40.1, 40.3, 40.4, 39.9, 39.5, 39.1,
-                 38.7, 38.3, 38.0, 37.9, 37.9, 38.0)
-    return(profile[min(day + 1, length(profile))])
-  }
-  38.0
+
+  base_delta <- weight_profiles[[group_name]][day + 1]
+  value <- w0 + base_delta * (1 + severity) + weight_wobble(mouse, day)
+  round(clamp(value, 12.0, 30.0), 1)
+}
+
+score_traj <- function(group_name, day, alive, severity, mouse) {
+  if (!alive) return(0)
+
+  base <- score_profiles[[group_name]][day + 1]
+  adjusted <- round(base + severity * 2 + score_wobble(mouse, day))
+  clamp(adjusted, 0, 4)
+}
+
+temp_traj <- function(group_name, day, alive, severity, mouse) {
+  if (!alive) return(NA_real_)
+
+  base <- temp_profiles[[group_name]][day + 1]
+  value <- base + severity * 0.4 + temp_wobble(mouse, day)
+  round(clamp(value, 37.4, 40.8), 1)
 }
 
 # ── Build weights CSV ─────────────────────────────────────────────────────────
@@ -116,6 +129,7 @@ for (g in groups) {
   for (mi in seq_along(g$mice)) {
     mouse  <- g$mice[mi]
     w0     <- g$w0[mi]
+    sev    <- g$severity[mi]
     da     <- g$die_after[mi]
 
     # Identity: only first mouse in each cage gets study_id and cage
@@ -130,9 +144,9 @@ for (g in groups) {
       alive <- d <= da
       date_str <- format(d0_date + d, "%-m/%-d/%Y")   # no leading zeros
       ts   <- paste0(date_str, " ", g$time)
-      w    <- weight_traj(g$name, w0, d, alive)
-      s    <- score_traj(g$name, d, alive)
-      temp <- temp_traj(g$name, d, alive)
+      w    <- weight_traj(g$name, w0, d, alive, sev, mouse)
+      s    <- score_traj(g$name, d, alive, sev, mouse)
+      temp <- temp_traj(g$name, d, alive, sev, mouse)
 
       if (alive) {
         day_fields <- c(day_fields,
