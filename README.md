@@ -14,10 +14,19 @@ R/Shiny app for longitudinal mouse study analysis. The public version focuses on
 
 ## Quick start
 ```r
-install.packages("renv", repos = "https://cloud.r-project.org")
-renv::restore(prompt = FALSE)
-Rscript scripts/dev_run.R
+install.packages(
+  c(
+    "shiny", "bslib", "DT", "readr", "readxl", "dplyr", "tidyr",
+    "ggplot2", "survival", "janitor", "stringr", "rappdirs",
+    "scales", "colourpicker", "rhandsontable", "jsonlite",
+    "shinyjs", "digest", "testthat"
+  ),
+  repos = "https://cloud.r-project.org"
+)
+source("scripts/dev_run.R")
 ```
+
+For Windows PowerShell, `scripts/windows_run_public.ps1` will locate `Rscript.exe`, render example plots, and launch the app.
 
 ## Example outputs / screenshots
 - `docs/img/app-overview.png`
