@@ -81,12 +81,13 @@ weight_plot <- plot_weights(
   ),
   settings = list(
     mode = "raw",
-    individual_layer = "lines",
+    individual_layer = "points",
     show_mean = TRUE,
-    error_style = "sem",
+    error_style = "none",
     y_axis_mode = "auto",
     start_at_zero = FALSE,
-    show_legend_n = TRUE
+    show_legend_n = TRUE,
+    point_spread = 0.10
   )
 )
 
