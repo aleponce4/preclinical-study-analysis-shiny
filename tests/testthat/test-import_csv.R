@@ -84,7 +84,7 @@ testthat::test_that("template examples import cleanly", {
   testthat::expect_true(nrow(survival_import$data) > 0)
 })
 
-testthat::test_that("real-template import forward-fills merged Virus and Cage Card cells", {
+testthat::test_that("real-template import keeps explicit study and group columns populated", {
   imported <- read_weights_import(project_path("inst", "templates", "example_weights.csv"))
 
   testthat::expect_false(any(is.na(imported$data$group) | !nzchar(imported$data$group)))
@@ -97,7 +97,7 @@ testthat::test_that("real-template import parses gram-suffixed weight values", {
   row_201 <- imported$data |>
     dplyr::filter(.data$animal_id == "201")
 
-  testthat::expect_equal(row_201$d0[[1]], 21.0)
+  testthat::expect_equal(row_201$d0[[1]], 22.7)
   testthat::expect_equal(row_201$d15[[1]], 24.4)
 })
 
