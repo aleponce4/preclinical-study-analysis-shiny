@@ -1,0 +1,32 @@
+retention_days: 30
+
+admin_email:
+  to:
+    - maintainer@example.org
+  cc: []
+
+studies:
+  - study_id: example_study_a
+    enabled: false
+    source_url: "inst/templates/example_weights.csv"
+    source_format: csv
+    style_id: default
+    schedule_id: daily_0900
+    report_title: "Example Mouse Study A"
+    weights_sheet: 1
+    email_to:
+      - analyst.one@example.org
+    email_cc: []
+
+  - study_id: example_study_b
+    enabled: false
+    source_url: "inst/templates/example_weights.csv"
+    source_format: csv
+    style_id: default
+    schedule_id: weekdays_0900
+    report_title: "Example Mouse Study B"
+    weights_sheet: 1
+    email_to:
+      - analyst.two@example.org
+    email_cc:
+      - analyst.cc@example.org

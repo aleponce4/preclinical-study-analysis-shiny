@@ -1,0 +1,373 @@
+:root {
+  --app-accent: #154c79;
+  --app-accent-soft: #e8f1f8;
+  --app-warning: #fff3cd;
+  --app-error: #f8d7da;
+  --app-ok: #d9f2e6;
+  --app-border: #d7dde4;
+}
+
+body {
+  background:
+    radial-gradient(circle at top right, rgba(21, 76, 121, 0.12), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef3f8 100%);
+}
+
+.navbar {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding-top: 0.75rem;
+  padding-bottom: 0.95rem;
+}
+
+.navbar > .container-fluid {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.navbar-header {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+.navbar-brand {
+  margin-right: 2rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.navbar-collapse {
+  display: flex !important;
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  padding-top: 0.55rem;
+  padding-left: clamp(2.5rem, 8vw, 7rem);
+}
+
+.navbar-nav {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0.3rem;
+  border: 1px solid rgba(21, 76, 121, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 24px rgba(28, 39, 52, 0.08);
+}
+
+.navbar-nav > li {
+  float: none;
+  flex: 0 0 auto;
+}
+
+.navbar .nav-link,
+.navbar-nav > li > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7.8rem;
+  padding: 0.6rem 1.7rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 999px;
+  color: #4c6478;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar-nav > li > a:hover {
+  background: rgba(21, 76, 121, 0.08);
+  color: var(--app-accent);
+}
+
+.navbar-nav > li.active > a,
+.navbar-nav > li.active > a:hover,
+.navbar-nav > li.active > a:focus {
+  background: var(--app-accent);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(21, 76, 121, 0.2);
+}
+
+/* Second tab is "Manual Data Entry" and needs extra horizontal room. */
+.navbar-nav > li:nth-child(2) > a {
+  min-width: 10.6rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-title img {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+
+@media (max-width: 991px) {
+  .navbar > .container-fluid {
+    align-items: stretch;
+  }
+
+  .navbar-header {
+    margin-right: 0;
+  }
+
+  .navbar-collapse {
+    justify-content: flex-start;
+    padding-top: 0.6rem;
+    padding-left: 0;
+  }
+
+  .navbar-nav {
+    display: flex !important;
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 1rem;
+  }
+
+  .navbar .nav-link,
+  .navbar-nav > li > a {
+    min-width: 6.6rem;
+    padding: 0.55rem 1.25rem;
+  }
+
+  .navbar-nav > li:nth-child(2) > a {
+    min-width: 9.6rem;
+    padding-left: 1.6rem;
+    padding-right: 1.6rem;
+  }
+}
+
+.full-height-card {
+  min-height: 100%;
+}
+
+.control-card,
+.control-card.html-fill-item {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.control-card > .card-body,
+.control-card > .card-body.html-fill-item,
+.control-card > .card-body.html-fill-container,
+.control-card-body {
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.issue-block {
+  border: 1px solid var(--app-border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.issue-block ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.issue-block-error {
+  background: var(--app-error);
+}
+
+.issue-block-warning {
+  background: var(--app-warning);
+}
+
+.issue-block-ok {
+  background: var(--app-ok);
+}
+
+.card {
+  border: 1px solid rgba(21, 76, 121, 0.08);
+  box-shadow: 0 18px 42px rgba(28, 39, 52, 0.06);
+}
+
+/* Accordion panels */
+.accordion {
+  --bs-accordion-border-color: rgba(21, 76, 121, 0.08);
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--app-accent-soft);
+  color: var(--app-accent);
+}
+
+/* Inline radio buttons in card header */
+.card-header .shiny-input-radiogroup {
+  margin-bottom: 0;
+}
+
+.card-header .shiny-input-radiogroup .radio-inline {
+  margin-right: 1rem;
+}
+
+/* Validation banner */
+.validation-banner {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.validation-banner:empty {
+  display: none;
+}
+
+.palette-preview {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.palette-preview-chip {
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  display: inline-block;
+}
+
+.palette-gallery .form-group {
+  margin-bottom: 0;
+}
+
+.palette-gallery .shiny-options-group {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.palette-gallery .radio {
+  margin: 0;
+}
+
+.palette-gallery .radio label {
+  display: block;
+  padding: 0;
+  font-weight: 400;
+}
+
+.palette-gallery .radio label > span {
+  display: block;
+}
+
+.palette-gallery .radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.palette-choice-label {
+  display: block;
+  border: 1px solid rgba(21, 76, 121, 0.16);
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.palette-choice-name {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.palette-gallery .radio input[type="radio"]:checked + span .palette-choice-label {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 2px rgba(21, 76, 121, 0.18);
+  background: var(--app-accent-soft);
+}
+
+.palette-gallery .radio input[type="radio"]:focus + span .palette-choice-label {
+  box-shadow: 0 0 0 3px rgba(21, 76, 121, 0.18);
+}
+
+.palette-preview-row {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.palette-preview-row .palette-preview-chip {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.entry-day-card {
+  border: 1px solid rgba(21, 76, 121, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.8rem 0.9rem 0.2rem;
+  margin-bottom: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.manual-entry-setup-card .card-body {
+  overflow: visible !important;
+}
+
+.manual-entry-table-card .card-body,
+.manual-entry-table-wrap {
+  overflow: visible !important;
+}
+
+.manual-entry-table-card .handsontable th,
+.manual-entry-table-card .handsontable td {
+  border-color: rgba(21, 76, 121, 0.22) !important;
+  min-height: 30px;
+}
+
+.manual-entry-table-card .handsontable td.entry-group-name-col {
+  background: rgba(21, 76, 121, 0.10) !important;
+  font-weight: 600;
+}
+
+.manual-entry-table-card .handsontable td.entry-group-row-start {
+  border-top: 4px solid rgba(21, 76, 121, 0.82) !important;
+}
+
+.manual-entry-table-card table.dataTable.manual-entry-dt thead th,
+.manual-entry-table-card table.dataTable.manual-entry-dt tbody td {
+  border-color: rgba(21, 76, 121, 0.22) !important;
+  min-width: 5.5rem;
+}
+
+.manual-entry-table-card table.dataTable.manual-entry-dt thead th:first-child,
+.manual-entry-table-card table.dataTable.manual-entry-dt tbody td:first-child {
+  min-width: 11rem;
+}
+
+.manual-entry-table-card table.dataTable.manual-entry-dt thead th:nth-child(2),
+.manual-entry-table-card table.dataTable.manual-entry-dt tbody td:nth-child(2) {
+  min-width: 8rem;
+}
+
+.manual-entry-table-card table.dataTable.manual-entry-dt tbody td.entry-group-name-col {
+  background: rgba(21, 76, 121, 0.1) !important;
+  font-weight: 600;
+}
+
+.manual-entry-table-card table.dataTable.manual-entry-dt tbody tr.entry-group-row-start td {
+  border-top: 4px solid rgba(21, 76, 121, 0.82) !important;
+}

@@ -1,0 +1,20 @@
+timezone: America/Chicago
+
+schedules:
+  daily_0900:
+    type: daily
+    time: "09:00"
+
+  weekdays_0900:
+    type: weekdays
+    time: "09:00"
+
+  monday_0900:
+    type: weekly
+    weekday: monday
+    time: "09:00"
+
+  mwf_0900:
+    type: weekly_days
+    weekdays: [monday, wednesday, friday]
+    time: "09:00"
