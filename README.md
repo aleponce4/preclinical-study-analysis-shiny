@@ -37,8 +37,6 @@ Kaplan-Meier survival example:
 
 ![Kaplan-Meier survival example](docs/img/survival-plot.png)
 
-An app overview screenshot can be added later as `docs/img/app-overview.png`.
-
 ## Technologies used
 R, Shiny, ggplot2, dplyr, survival, readr/readxl, renv
 

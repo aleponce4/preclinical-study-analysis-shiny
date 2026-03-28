@@ -94,7 +94,7 @@ survival_plot <- plot_survival(
   compute_survival_analysis(validation$clean_survival, group_meta),
   metadata = list(study_title = "Example longitudinal mouse study"),
   settings = list(
-    show_ci = TRUE,
+    show_ci = FALSE,
     show_censor_marks = TRUE,
     show_death_marks = TRUE,
     show_p_value = TRUE,
