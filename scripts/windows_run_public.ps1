@@ -1,7 +1,7 @@
 param(
   [switch]$InstallPackages = $false,
-  [switch]$RenderAssets = $true,
-  [switch]$RunApp = $true
+  [switch]$RenderAssets = $false,
+  [switch]$RunApp = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -60,6 +60,11 @@ Set-Location $repoRoot
 
 $rscript = Find-Rscript
 Write-Host "Using Rscript: $rscript" -ForegroundColor Green
+
+if (-not $InstallPackages -and -not $RenderAssets -and -not $RunApp) {
+  $RenderAssets = $true
+  $RunApp = $true
+}
 
 if ($InstallPackages) {
   Invoke-RScriptFile -RscriptPath $rscript -ScriptPath "scripts/windows_install_public_packages.R"
