@@ -116,7 +116,7 @@ day_dates <- format(d0_date + days, "%m/%d/%y")
 # Remove leading zero from month/day for Windows-style dates
 day_dates <- sub("^0", "", gsub("/0", "/", day_dates))
 
-header_fields <- c("Group", "Cage Card", "Mouse ID")
+header_fields <- c("Study ID", "Group", "Cage Card", "Mouse ID")
 for (d in days) {
   header_fields <- c(header_fields,
                      paste0("D", d, " ", day_dates[d + 1]),
@@ -132,12 +132,7 @@ for (g in groups) {
     sev    <- g$severity[mi]
     da     <- g$die_after[mi]
 
-    # Identity: only first mouse in each cage gets study_id and cage
-    if (mi == 1) {
-      id_fields <- c(study_id, g$name, as.character(mouse))
-    } else {
-      id_fields <- c("", "", as.character(mouse))
-    }
+    id_fields <- c(study_id, g$name, g$cage, as.character(mouse))
 
     day_fields <- character(0)
     for (d in days) {
