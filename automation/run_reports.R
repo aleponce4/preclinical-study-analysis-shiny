@@ -84,10 +84,14 @@ main <- function() {
   if (!is.null(cli$study_id) && nzchar(cli$study_id)) {
     filter_info <- due_info$filter_info %||% list()
     if (identical(filter_info$match_count %||% 0L, 0L)) {
-      stop(sprintf("--study-id '%s' was not found in configured studies.", cli$study_id), call. = FALSE)
+      msg <- sprintf("--study-id '%s' was not found in configured studies.", cli$study_id)
+      message(msg)
+      stop(msg, call. = FALSE)
     }
     if (identical(filter_info$enabled_match_count %||% 0L, 0L)) {
-      stop(sprintf("--study-id '%s' exists but is disabled (enabled: false).", cli$study_id), call. = FALSE)
+      msg <- sprintf("--study-id '%s' exists but is disabled (enabled: false).", cli$study_id)
+      message(msg)
+      stop(msg, call. = FALSE)
     }
   }
 
