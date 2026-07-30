@@ -28,9 +28,11 @@ source_files <- c(
   "mapping.R",
   "settings.R",
   "transform_weights.R",
+  "transform_scores.R",
   "transform_survival.R",
   "validate.R",
   "plots_weights.R",
+  "plots_scores.R",
   "plots_survival.R",
   "downloads.R"
 )
