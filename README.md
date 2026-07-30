@@ -106,7 +106,11 @@ testthat::test_dir("tests/testthat")
 
 ---
 
-## 7. Example Visualizations
+## 7. User Interface & Example Visualizations
+
+Application User Interface:
+
+![Preclinical Study Analysis Shiny Application GUI](docs/img/app-gui.png)
 
 Weight trajectory example:
 
