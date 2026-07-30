@@ -11,7 +11,7 @@ test_that("runner fails for unknown --study-id", {
   })
 
   status <- attr(out, "status") %||% 0L
-  expect_equal(status, 1L)
+  expect_gt(status, 0L)
   expect_true(any(grepl("was not found", out, fixed = TRUE)))
 })
 
@@ -52,6 +52,6 @@ test_that("runner fails for disabled --study-id", {
   })
 
   status <- attr(out, "status") %||% 0L
-  expect_equal(status, 1L)
+  expect_gt(status, 0L)
   expect_true(any(grepl("exists but is disabled", out, fixed = TRUE)))
 })

@@ -109,8 +109,10 @@ test_that("automation_import_weights uses hardened Excel importer for offset hea
 })
 
 test_that("automation study overrides exclude scheduled sampling cages from KM", {
+  wb_path <- project_path("example_workbook.xlsx")
+  skip_if_not(file.exists(wb_path), "Workbook example_workbook.xlsx is not present in repo")
   imported <- automation_import_weights(
-    path = project_path("example_workbook.xlsx"),
+    path = wb_path,
     source_format = "excel"
   )
 
