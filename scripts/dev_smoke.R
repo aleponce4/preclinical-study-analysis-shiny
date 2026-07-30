@@ -41,7 +41,7 @@ invisible(lapply(source_files, function(file) {
   source(file.path(root, "app", "R", file), chdir = TRUE)
 }))
 
-weights_import <- read_csv_import(project_path("inst", "templates", "example_weights.csv"))
+weights_import <- read_weights_import(project_path("inst", "templates", "example_weights.csv"))
 survival_import <- read_csv_import(project_path("inst", "templates", "example_survival.csv"))
 
 validation <- validate_study_data(
@@ -50,7 +50,9 @@ validation <- validate_study_data(
   mapping = build_mapping_bundle(
     weights = guess_field_mapping(weights_import, weights_field_spec()),
     survival = guess_field_mapping(survival_import, survival_field_spec()),
-    day_map = default_day_mapping(weights_import)
+    day_map = default_day_mapping(weights_import),
+    survival_day_map = default_survival_day_mapping(survival_import),
+    score_day_map = default_score_day_mapping(weights_import)
   )
 )
 
