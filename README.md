@@ -1,6 +1,6 @@
 # Preclinical Study Analysis
 
-[![R checks](https://github.com/aponcefl/preclinical-study-analysis-shiny/actions/workflows/check.yml/badge.svg)](https://github.com/aponcefl/preclinical-study-analysis-shiny/actions/workflows/check.yml)
+[![R checks](https://github.com/aleponce4/preclinical-study-analysis-shiny/actions/workflows/check.yml/badge.svg)](https://github.com/aleponce4/preclinical-study-analysis-shiny/actions/workflows/check.yml)
 
 R/Shiny application for longitudinal mouse study analysis. The public repository provides an end-to-end analytical workflow: import multi-table study data, map and validate field schemas, compute normalized weight trajectories and Kaplan-Meier survival curves, and export formatted figures alongside analysis-ready tabular data.
 
@@ -28,7 +28,7 @@ R/Shiny application for longitudinal mouse study analysis. The public repository
 
 ## 3. Architecture & Modular Structure
 
-The application follows a modular Shiny design pattern. UI components and server logic are separated into single-responsibility modules under [`app/R/`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/):
+The application follows a modular Shiny design pattern. UI components and server logic are separated into single-responsibility modules under [`app/R/`](app/R/):
 
 ```text
 Data Ingestion / Direct Entry
@@ -51,17 +51,17 @@ Data Ingestion / Direct Entry
 
 ### Key Modules
 
-- [`mod_import.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/mod_import.R) / [`mod_entry.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/mod_entry.R): Ingestion interfaces handling file uploads, sheet parsing, and interactive data grids.
-- [`mod_weights.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/mod_weights.R) / [`mod_survival.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/mod_survival.R) / [`mod_scores.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/mod_scores.R): Shiny UI and server modules for endpoint-specific controls, filtering, and tab views.
-- [`transform_weights.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/transform_weights.R) / [`transform_survival.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/transform_survival.R): Pure transformation functions for baseline percentage calculation, group aggregations, and survival curve fitting.
-- [`validate.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/validate.R): Rule-based validation engine trapping schema defects before execution.
-- [`plots_weights.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/plots_weights.R) / [`plots_survival.R`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/app/R/plots_survival.R): `ggplot2` rendering wrappers enforcing consistent plot aesthetics, error bar calculations, and risk tables.
+- [`mod_import.R`](app/R/mod_import.R) / [`mod_entry.R`](app/R/mod_entry.R): Ingestion interfaces handling file uploads, sheet parsing, and interactive data grids.
+- [`mod_weights.R`](app/R/mod_weights.R) / [`mod_survival.R`](app/R/mod_survival.R) / [`mod_scores.R`](app/R/mod_scores.R): Shiny UI and server modules for endpoint-specific controls, filtering, and tab views.
+- [`transform_weights.R`](app/R/transform_weights.R) / [`transform_survival.R`](app/R/transform_survival.R): Pure transformation functions for baseline percentage calculation, group aggregations, and survival curve fitting.
+- [`validate.R`](app/R/validate.R): Rule-based validation engine trapping schema defects before execution.
+- [`plots_weights.R`](app/R/plots_weights.R) / [`plots_survival.R`](app/R/plots_survival.R): `ggplot2` rendering wrappers enforcing consistent plot aesthetics, error bar calculations, and risk tables.
 
 ---
 
 ## 4. Reproducible Environment
 
-Dependencies and version constraints are pinned via [`renv.lock`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/renv.lock) targeting **R 4.4.2**.
+Dependencies and version constraints are pinned via [`renv.lock`](renv.lock) targeting **R 4.4.2**.
 
 To restore the pinned library environment locally:
 
@@ -90,7 +90,7 @@ When errors are detected, the user interface presents actionable line-by-line fe
 
 ## 6. Automated Testing
 
-The repository contains automated unit and integration tests under [`tests/testthat/`](file:///C:/Users/aponcefl/Documents/GitHub_Repos/preclinical-study-analysis-shiny/tests/testthat/):
+The repository contains automated unit and integration tests under [`tests/testthat/`](tests/testthat/):
 
 - **Data Ingestion & Mapping**: `test-import_csv.R`, `test-direct-entry.R`, `test-mapping.R`.
 - **Calculations & Transformations**: `test-transform_weights.R`, `test-transform_survival.R`.
@@ -142,5 +142,6 @@ source("scripts/dev_run.R")
 
 ## 9. Scope & Limitations
 
-This repository presents the core interactive analysis and visualization workflow. Proprietary and institution-specific extensions—such as direct enterprise LIMS database connectors, automated SMTP email report distribution, internal single sign-on (SSO) authentication, and cluster batch job queuing—are intentionally omitted from this public community release.
+This repository presents the core interactive analysis and visualization workflow. Study data and institution-specific deployment configuration are not included in this public repository.
+
 
