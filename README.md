@@ -110,7 +110,7 @@ testthat::test_dir("tests/testthat")
 
 Application User Interface:
 
-![Preclinical Study Analysis Shiny Application GUI](docs/img/app-gui.png)
+_Screenshot removed: the previous image showed unpublished study data and has not yet been recaptured from the bundled example dataset (`inst/templates/example_weights.csv`, loadable via the Import tab's "Load example data" action)._
 
 Weight trajectory example:
 

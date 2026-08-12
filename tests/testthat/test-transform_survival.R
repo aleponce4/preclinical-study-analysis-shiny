@@ -438,28 +438,3 @@ testthat::test_that("invalid scheduled sampling censor day surfaces a survival v
 
   testthat::expect_true(any(grepl("Scheduled sampling cages must have a valid censor DPI", validation$survival_hard_errors)))
 })
-
-testthat::test_that("example_study_2 workbook exposes scheduled sampling cage candidates", {
-  wb_path <- project_path("example_workbook.xlsx")
-  testthat::skip_if_not(file.exists(wb_path), "Workbook example_workbook.xlsx is not present in repo")
-  imported <- read_weights_excel_import(wb_path)
-  validation <- validate_study_data(
-    raw_weights = imported,
-    raw_survival = NULL,
-    mapping = build_mapping_bundle(
-      weights = guess_field_mapping(imported, weights_field_spec()),
-      survival = list(),
-      day_map = default_day_mapping(imported),
-      survival_day_map = tibble::tibble(),
-      score_day_map = default_score_day_mapping(imported)
-    ),
-    infer_death_events = TRUE,
-    detect_scheduled_sampling = TRUE
-  )
-
-  review <- validation$scheduled_sampling_review
-
-  testthat::expect_true(any(review$cage_card == "900012" & review$role == "scheduled_sampling" & review$censor_day == 2L))
-  testthat::expect_true(any(review$cage_card == "900013" & review$role == "scheduled_sampling" & review$censor_day == 1L))
-  testthat::expect_true(any(review$cage_card == "900010" & review$role == "survival"))
-})

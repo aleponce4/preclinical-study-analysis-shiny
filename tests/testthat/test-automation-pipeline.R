@@ -10,12 +10,14 @@ write_offset_weights_xlsx_for_automation <- function(path) {
     "D3 12/12/25", "", "", "", "Score",
     "D4 12/13/25", "", "", "", "Score"
   )
-  rows[6, ] <- c("Group A Mock", "900001", "113", "46000.5", "113", "36.6C", "170.9 g", "", "46000.5", "113", "35.9C", "161.3 g", "", "46000.5", "113", "36.8C", "169.7g", "", "46000.5", "113", "36.2C", "173.1 g", "", "46000.5", "113", "36.5C", "178.2 g", "")
-  rows[7, ] <- c("", "900002", "114", "46000.5", "114", "37.0C", "168.7 g", "", "46000.5", "114", "37.0C", "168.4 g", "", "46000.5", "114", "37.3C", "172.0 g", "", "46000.5", "114", "36.8C", "174.5 g", "", "46000.5", "114", "37.2C", "179.0 g", "")
-  rows[8, ] <- c("", "900003", "115", "46000.5", "115", "36.8C", "151.2 g", "", "46000.5", "115", "37.4C", "157.2 g", "", "46000.5", "115", "36.9C", "162.5 g", "", "46000.5", "115", "37.1C", "165.4 g", "", "46000.5", "115", "37.0C", "169.1 g", "")
-  rows[9, ] <- c("Group B Challenge", "900007", "129", "46000.5", "129", "37.1C", "156.4 g", "", "46000.5", "129", "37.0C", "155.0 g", "", "46000.5", "129", "37.2C", "156.1 g", "", "46000.5", "129", "37.1C", "159.3 g", "", "46000.5", "129", "37.0C", "163.5 g", "")
-  rows[10, ] <- c("", "900005", "127", "46000.5", "127", "37.1C", "184.8 g", "", "46000.5", "127", "36.8C", "185.1 g", "", "46000.5", "127", "37.0C", "188.5 g", "", "46000.5", "127", "36.9C", "193.2 g", "", "46000.5", "127", "37.2C", "198.0 g", "")
-  rows[11, ] <- c("", "900006", "131", "46000.5", "131", "36.6C", "148.4 g", "", "46000.5", "131", "36.9C", "147.6 g", "", "46000.5", "131", "36.8C", "150.2 g", "", "46000.5", "131", "36.7C", "151.9 g", "", "46000.5", "131", "36.8C", "154.6 g", "")
+  # Invented values only. The unspaced "176.8g" on the first data row is deliberate:
+  # it exercises the gram-suffix parser against a missing space.
+  rows[6, ] <- c("Group A Mock", "900001", "201", "46000.5", "201", "36.7C", "172.4 g", "", "46001.5", "201", "36.5C", "174.1 g", "", "46002.5", "201", "36.9C", "176.8g", "", "46003.5", "201", "36.6C", "179.2 g", "", "46004.5", "201", "36.8C", "181.5 g", "")
+  rows[7, ] <- c("", "900002", "202", "46000.5", "202", "37.1C", "165.3 g", "", "46001.5", "202", "36.9C", "167.0 g", "", "46002.5", "202", "37.2C", "169.4 g", "", "46003.5", "202", "37.0C", "171.8 g", "", "46004.5", "202", "37.3C", "174.2 g", "")
+  rows[8, ] <- c("", "900003", "203", "46000.5", "203", "36.8C", "158.6 g", "", "46001.5", "203", "37.0C", "160.2 g", "", "46002.5", "203", "36.7C", "162.7 g", "", "46003.5", "203", "37.1C", "165.1 g", "", "46004.5", "203", "36.9C", "167.9 g", "")
+  rows[9, ] <- c("Group B Challenge", "900007", "206", "46000.5", "206", "37.2C", "154.7 g", "", "46001.5", "206", "37.0C", "153.1 g", "", "46002.5", "206", "37.3C", "155.6 g", "", "46003.5", "206", "37.1C", "158.0 g", "", "46004.5", "206", "37.0C", "161.4 g", "")
+  rows[10, ] <- c("", "900005", "205", "46000.5", "205", "37.0C", "183.5 g", "", "46001.5", "205", "36.8C", "184.9 g", "", "46002.5", "205", "37.1C", "187.2 g", "", "46003.5", "205", "36.9C", "191.6 g", "", "46004.5", "205", "37.2C", "196.3 g", "")
+  rows[11, ] <- c("", "900006", "207", "46000.5", "207", "36.6C", "147.8 g", "", "46001.5", "207", "36.9C", "146.9 g", "", "46002.5", "207", "36.7C", "149.5 g", "", "46003.5", "207", "36.8C", "151.2 g", "", "46004.5", "207", "36.5C", "153.9 g", "")
 
   writexl::write_xlsx(
     list(sheet1 = as.data.frame(rows, stringsAsFactors = FALSE)),
@@ -105,34 +107,5 @@ test_that("automation_import_weights uses hardened Excel importer for offset hea
   expect_true(all(is.na(imported$data$study_id)))
   expect_equal(imported$data$group[[1]], "Group A Mock")
   expect_equal(imported$data$cage_card[[1]], "900001")
-  expect_equal(imported$data$d4[[5]], 198.0)
-})
-
-test_that("automation study overrides exclude scheduled sampling cages from KM", {
-  wb_path <- project_path("example_workbook.xlsx")
-  skip_if_not(file.exists(wb_path), "Workbook example_workbook.xlsx is not present in repo")
-  imported <- automation_import_weights(
-    path = wb_path,
-    source_format = "excel"
-  )
-
-  validation <- validate_study_data(
-    raw_weights = imported,
-    raw_survival = NULL,
-    mapping = automation_default_mapping_bundle(imported),
-    infer_death_events = TRUE,
-    detect_scheduled_sampling = TRUE,
-    scheduled_sampling_cages = tibble::tibble(
-      cage_card = "900010",
-      role = "scheduled_sampling",
-      censor_day = 6L
-    )
-  )
-  group_meta <- resolve_group_colors(validation$group_meta, default_shared_style_settings())
-  analysis <- compute_survival_analysis(validation$clean_survival, group_meta)
-
-  expect_false(analysis$valid)
-  expect_match(analysis$message, "No survival-cohort rows are available")
-  expect_true(sum(analysis$excluded_summary$`Excluded from KM`, na.rm = TRUE) > 0)
-  expect_true(any(validation$scheduled_sampling_review$cage_card == "900010"))
+  expect_equal(imported$data$d4[[5]], 196.3)
 })
